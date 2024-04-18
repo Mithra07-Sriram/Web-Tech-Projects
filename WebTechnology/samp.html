@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Validation</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* Style for error messages */
+    .error {
+        color: red; /* Set the text color to red */
+        font-size: 0.9em; /* Slightly smaller font size */
+    }
+</style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Registration Form</h3>
+        </div>
+        <div class="card-body" style="background-color: #02123070;"> 
+            <form id="myForm" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter your name" onblur="validateName()">
+                    <span id="nameError" class="error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" onblur="validateEmail()">
+                    <span id="emailError" class="error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="text" class="form-control" id="phoneNumber" placeholder="Enter your phone number" onblur="validatePhoneNumber()">
+                    <span id="phoneNumberError" class="error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" onblur="validatePassword()">
+                    <span id="passwordError" class="error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password" onblur="validateConfirmPassword()">
+                    <span id="confirmPasswordError" class="error"></span>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="checkbox" onchange="toggleSubmit()">
+                    <label class="form-check-label" for="checkbox">Agree to terms</label>
+                    <span id="checkboxError" class="error"></span>
+                </div>
+
+                <label for="course" style="color: rgba(14, 14, 14, 0.961);">Course:</label>
+                <select id="course" name="course" class="form-control" onchange="updateBranches(); toggleSubmit()">
+                    <option value="BE">BE</option>
+                    <option value="Btech">Btech</option>
+                </select>
+                <span id="courseError" class="error"></span><br>
+                
+                <label for="branch" style="color: rgb(12, 12, 12);">Branch:</label>
+                <select id="branch" name="branch" class="form-control" onchange="toggleSubmit()">
+                    <option value="">Select</option>
+                    <!-- Options will be dynamically updated based on the selected course -->
+                </select>
+                <span id="branchError" class="error"></span><br>
+                
+                <div class="form-group">
+                    <label>Gender:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="male" value="male" onchange="toggleSubmit()">
+                        <label class="form-check-label" for="male">Male</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="female" value="female" onchange="toggleSubmit()">
+                        <label class="form-check-label" for="female">Female</label>
+                    </div>
+                    <span id="genderError" class="error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <select class="form-control" id="country" style="background-color: #ffffff;" onchange="toggleSubmit()">
+                        <option value="">Select</option>
+                        <option value="usa">USA</option>
+                        <option value="uk">UK</option>
+                        <option value="canada">Canada</option>
+                    </select>
+                    <span id="countryError" class="error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitButton" disabled>Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4>Entered Information:</h4>
+        <div style="float:left;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Password</th> <!-- Consider removing or masking this -->
+                        <th>Gender</th>
+                        <th>Country</th>
+                        <th>Course - Branch</th>
+                    </tr>
+                </thead>
+                <tbody id="userData">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and jQuery (for Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- JavaScript for validation -->
+<script>
+function toggleSubmit() {
+    var submitButton = document.getElementById('submitButton');
+    var agreeCheckbox = document.getElementById('checkbox');
+
+    // Enable submit button if the agreeCheckbox is checked
+    if (agreeCheckbox.checked) {
+        submitButton.disabled = false;
+    } else {
+        submitButton.disabled = true;
+    }
+}
+
+function validateName() {
+    var name = document.getElementById('name').value;
+    var errorDiv = document.getElementById('nameError');
+    if (name === '') {
+        errorDiv.textContent = "Name is required!";
+        return false;
+    } else {
+        errorDiv.textContent = "";
+        return true;
+    }
+}
+
+function validateEmail() {
+    var email = document.getElementById('email').value;
+    var errorDiv = document.getElementById('emailError');
+    var emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    if (!email.match(emailPattern)) {
+        errorDiv.textContent = "Invalid email format!";
+        return false;
+    } else {
+        errorDiv.textContent = "";
+        return true;
+    }
+}
+
+function validatePhoneNumber() {
+    var phoneNumber = document.getElementById('phoneNumber').value;
+    var errorDiv = document.getElementById('phoneNumberError');
+    var phonePattern = /^[0-9]{10}$/;
+    if (!phoneNumber.match(phonePattern)) {
+        errorDiv.textContent = "Phone number must be 10 digits!";
+        return false;
+    } else {
+        errorDiv.textContent = "";
+        return true;
+    }
+}
+
+function validatePassword() {
+    var password = document.getElementById('password').value;
+    var errorDiv = document.getElementById('passwordError');
+    if (password.length < 8) {
+        errorDiv.textContent = "Password must be at least 8 characters long!";
+        return false;
+    } else {
+        errorDiv.textContent = "";
+        return true;
+    }
+}
+
+function validateConfirmPassword() {
+    var password = document.getElementById('password').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+    var errorDiv = document.getElementById('confirmPasswordError');
+    if (confirmPassword !== password) {
+        errorDiv.textContent = "Passwords do not match!";
+        return false;
+    } else {
+        errorDiv.textContent = "";
+        return true;
+    }
+}
+
+function updateBranches() {
+    var courseSelect = document.getElementById('course');
+    var branchSelect = document.getElementById('branch');
+    var branches = {
+        'BE': ['Computer', 'Electronics', 'Mechanical'],
+        'Btech': ['Information Technology', 'Electrical', 'Civil']
+    };
+
+    // Remove all options
+    while (branchSelect.options.length > 1) {
+        branchSelect.remove(1);
+    }
+
+    // Add new options
+    if (courseSelect.value in branches) {
+        branches[courseSelect.value].forEach(function(branch) {
+            var option = new Option(branch, branch);
+            branchSelect.add(option);
+        });
+    }
+}
+
+function validateForm() {
+    var isValid = true;
+    
+    // Validate each field by calling individual validation functions
+    isValid &= validateName();
+    isValid &= validateEmail();
+    isValid &= validatePhoneNumber();
+    isValid &= validatePassword();
+    isValid &= validateConfirmPassword();
+
+    // Check the results of individual validations
+    if (!isValid) {
+        return false;
+    }
+
+    // Collect input data
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var phoneNumber = document.getElementById('phoneNumber').value;
+    var password = document.getElementById('password').value; // For security, consider not displaying the password
+    var gender = document.querySelector('input[name="gender"]:checked') ? document.querySelector('input[name="gender"]:checked').value : '';
+    var country = document.getElementById('country').value;
+    var course = document.getElementById('course').value;
+    var branch = document.getElementById('branch').value;
+    var courseBranch = course + ' - ' + branch;
+
+    // Display the data
+    var table = document.getElementById('userData');
+    var row = `<tr>
+        <td>${name}</td>
+        <td>${email}</td>
+        <td>${phoneNumber}</td>
+        <td>${password}</td> <!-- Consider removing or masking the password -->
+        <td>${gender}</td>
+        <td>${country}</td>
+        <td>${courseBranch}</td>
+    </tr>`;
+    table.innerHTML += row;
+
+    return false; // Prevent default form submission
+}
+</script>
+</body>
+</html>
